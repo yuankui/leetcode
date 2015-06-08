@@ -5,7 +5,7 @@ class Solution:
     def twoSum(self, nums, target):
         exist_hash = {}
         for index, num in enumerate(nums):
-            exist_hash[num] =  index
+            exist_hash[num] = index
 
         for index, left_num in enumerate(nums):
             right_num = target - left_num
