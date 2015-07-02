@@ -1,3 +1,4 @@
+# encoding: utf-8
 import unittest
 # Definition for a point.
 class Point:
@@ -6,6 +7,8 @@ class Point:
         self.y = b
 
 
+# 计算所有两点直接的直线方程,将直线方程放入hash中
+# 然后统计落入同一个hash中最多的直线上面的点数
 class Solution:
     # @param {Point[]} points
     # @return {integer}
@@ -37,8 +40,8 @@ class Solution:
         if deltaX == 0:
             return (p1.x, None)
         else:
-            angle = float(p1.y - p2.y) / (p1.x - p2.x)
-            delta = float(p1.x * p2.y - p2.x * p1.y) / (p1.x - p2.x)
+            angle = (p1.y - p2.y) / (p1.x - p2.x)
+            delta = (p1.x * p2.y - p2.x * p1.y) / (p1.x - p2.x)
             return (delta, angle)
 
 
