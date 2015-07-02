@@ -2,6 +2,7 @@ class Solution:
     # @param {integer[]} nums
     # @param {integer} target
     # @return {integer[]}
+    @apply()
     def twoSum(self, nums, target):
         exist_hash = {}
         for index, num in enumerate(nums):
@@ -15,3 +16,5 @@ class Solution:
 
             if right_index > index:
                 return [index + 1, right_index + 1]
+
+
