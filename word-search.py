@@ -1,19 +1,48 @@
+# coding=utf-8
 class Solution:
     # @param {character[][]} board
     # @param {string} word
     # @return {boolean}
     def exist(self, board, word):
+        if not self.preCheck(board, word):
+            return False
         self.lenY, self.lenX = len(board), len(board[0])
         self.used = {}
         self.board = board
         self.found = False
         for y, line in enumerate(board):
             for x, char in enumerate(line):
-                self.search(board, (x, y), -1, word)
-                if self.found:
-                    return True
+                if char == word[0]:
+                    self.used[(x,y)] = True
+                    self.search(board, (x, y), 0, word)
+                    self.used[(x,y)] = False
+                    if self.found:
+                        return True
         return False
 
+    def preCheck(self, board, word):
+        '''to see if there are enough char num in the board,if not, there's no need to search'''
+
+        # char -> char's num in the board
+        availableCharNumMap = {}
+
+        # char -> char's num in the word
+        neededCharNumMap = {}
+        def fillMapWithLine(m, ones):
+            for one in ones:
+                if one in m:
+                    m[one] += 1
+                else:
+                    m[one] = 1
+        for line in board:
+            fillMapWithLine(availableCharNumMap, line)
+        fillMapWithLine(neededCharNumMap, word)
+
+        for char, num in neededCharNumMap.items():
+            ok = char in availableCharNumMap and availableCharNumMap.get(char) >= num
+            if not ok:
+                return False
+        return True
 
     directions = [(0, 1), (0, -1), (1, 0), (-1, 0)]
 
@@ -29,6 +58,7 @@ class Solution:
             return False
 
     def search(self, board, pos, index, word):
+        '''当前位于,已经搞定word中的第index个字母'''
         if index == len(word) - 1:
             self.found = True
             return True
@@ -54,11 +84,12 @@ class SolutionTest(unittest.TestCase):
                  "SFCS",
                  "ADEE"]
 
-        print self.s.exist(board, "ABCCED")
-        print self.s.exist(board, "SEE")
-        print self.s.exist(board, "ABCB")
+        assert self.s.exist(board, "ABCCED") == True
+        assert self.s.exist(board, "SEE") == True
+        assert self.s.exist(board, "ABCB") == False
+        assert self.s.exist(["aa"], "aaa") == False
+        assert self.s.exist(["aaaa","aaaa","aaaa","aaaa","aaab"], "aaaaaaaaaaaaaaaaaaaa") == False
+        print self.s.exist(["a"], "a")
 
-
-        print self.s.exist(["aa"], "aaa")
-        print self.s.exist(["aaaa","aaaa","aaaa","aaaa","aaab"], "aaaaaaaaaaaaaaaaaaaa")
-
+    def testPreCheck(self):
+        assert self.s.preCheck(["aaaa","aaaa","aaaa","aaaa","aaab"], "aaaaaaaaaaaaaaaaaaaa") == False
