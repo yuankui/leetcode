@@ -1,5 +1,56 @@
 # coding=utf-8
 
+class TrieNode:
+    # Initialize your data structure here.
+    def __init__(self):
+        self.end = False
+        self.children = {}
+
+
+class Trie:
+
+    def __init__(self):
+        self.root = TrieNode()
+
+    # @param {string} word
+    # @return {void}
+    # Inserts a word into the trie.
+    def insert(self, word):
+        p = self.root
+        for char in word:
+            if char not in p.children:
+                p.children[char] = TrieNode()
+            p = p.children[char]
+        p.end = True
+
+
+    # @param {string} word
+    # @return {boolean}
+    # Returns if the word is in the trie.
+    def search(self, word):
+        p = self.root
+        for char in word:
+            if char not in p.children:
+                return False
+            p = p.children[char]
+        if p.end:
+            return True
+        else:
+            return False
+
+
+    # @param {string} prefix
+    # @return {boolean}
+    # Returns if there is any word in the trie
+    # that starts with the given prefix.
+    def startsWith(self, prefix):
+        p = self.root
+        for char in prefix:
+            if char not in p.children:
+                return False
+            p = p.children[char]
+        return True
+
 class Solution:
     '''两种优化方案
     1. 每进行一步,要检查所有的方案,因此对于那些开始右重复的单词就可以复用之前的步骤
@@ -23,7 +74,8 @@ class Solution:
     def findWords(self, board, words):
         self.findWordsInner(board, words)
 
-        return filter(lambda word: self.foundWords.get(word) is True, words)
+        return self.foundWords.keys()
+        #return filter(lambda word: self.foundWords.get(word) is True, words)
 
     # @param {character[][]} board
     # @param {string} word
@@ -38,11 +90,14 @@ class Solution:
             self.wordMap[word] = True
 
         self.wordSplitMap = self.calcWordSplitMap(words)
+        self.trieTree = self.calcTrieTree(words)
 
         for y, line in enumerate(board):
             for x, char in enumerate(line):
+                if char not in self.trieTree.root.children:
+                    continue
                 self.used[(x, y)] = True
-                self.search(board, (x,y), words, "")
+                self.search(board, (x,y), words, char, self.trieTree.root.children[char])
                 self.used[(x, y)] = False
                 if len(words) == 0:
                     return True
@@ -59,13 +114,13 @@ class Solution:
 
         return valid
 
-    def search(self, board, pos, words, currentWord):
+    def search(self, board, pos, words, currentWord, trieTree):
         # 单词找到啦
-        if self.wordMap.get(currentWord) is True:
+        if trieTree.end:
             self.foundWords[currentWord] = True
 
         # 没有更多的单词啦,回退吧
-        if self.wordSplitMap.get(currentWord) is not True:
+        if len(trieTree.children) == 0:
             return
 
         for direction in Solution.directions:
@@ -76,10 +131,10 @@ class Solution:
             if valid:
                 char = board[newY][newX]
                 newWord = currentWord + char
-                wordExists = self.wordExists(newWord)
+                wordExists = char in trieTree.children
                 if wordExists:
                     self.used[newPos] = True
-                    self.search(board, newPos, words, newWord)
+                    self.search(board, newPos, words, newWord, trieTree.children[char])
                     self.used[newPos] = False
         return
 
@@ -92,6 +147,12 @@ class Solution:
 
     def wordExists(self, word):
         return self.wordSplitMap.get(word) is True
+
+    def calcTrieTree(self, words):
+        tree = Trie()
+        for word in words:
+            tree.insert(word)
+        return tree
 
 
 import unittest
@@ -122,5 +183,3 @@ class SolutionTest(unittest.TestCase):
         # board, words = ["a"], ["a","a"]
         # print self.s.findWords(board, words)
         pass
-        from test.word_search_ii import board, words
-        print self.s.findWords(board, words)
