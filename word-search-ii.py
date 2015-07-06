@@ -40,7 +40,6 @@ class Solution:
 
         self.wordSplitMap = self.calcWordSplitMap(words)
 
-        path = []
         for y, line in enumerate(board):
             for x, char in enumerate(line):
                 self.used[(x, y)] = True
@@ -62,9 +61,6 @@ class Solution:
         return valid
 
     def search(self, board, pos, words, currentWord):
-        '''当前位于,已经搞定word中的第index个字母
-        :returns 如果找到了,就返回1,没有找到就返回0, 如果是1,外层需要shift
-        '''
         # 单词找到啦
         if self.wordMap.get(currentWord) is True:
             self.foundWords[currentWord] = True
@@ -111,7 +107,6 @@ class SolutionTest(unittest.TestCase):
         print sorted(m.keys())
 
     def testFindWord(self):
-        pass
         # words = ["oath", "pea", "eat", "rain"]
         # board = [
         #     'oaan',
@@ -127,5 +122,4 @@ class SolutionTest(unittest.TestCase):
         #
         # board, words = ["a"], ["a","a"]
         # print self.s.findWords(board, words)
-
-
+        pass
