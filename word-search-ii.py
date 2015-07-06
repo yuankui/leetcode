@@ -29,7 +29,6 @@ class Solution:
     # @param {string} word
     # @return {boolean}
     def findWordsInner(self, board, words):
-        words = sorted(words)
         self.lenY, self.lenX = len(board), len(board[0])
         self.used = {}
         self.board = board
@@ -85,9 +84,9 @@ class Solution:
         return
 
     def calcWordSplitMap(self, words):
-        m = {}
+        m = {"": True}
         for word in words:
-            for i in xrange(len(word) + 1):
+            for i in xrange(1, len(word) + 1):
                 m [word[:i]] = True
         return m
 
@@ -123,3 +122,5 @@ class SolutionTest(unittest.TestCase):
         # board, words = ["a"], ["a","a"]
         # print self.s.findWords(board, words)
         pass
+        from test.word_search_ii import board, words
+        print self.s.findWords(board, words)
