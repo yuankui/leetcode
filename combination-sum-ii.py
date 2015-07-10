@@ -11,7 +11,7 @@ class Solution:
         for index, num in enumerate(candidates):
             if num > target:
                 break
-            for key in self.f.keys():
+            for key in sorted(self.f.keys()):
                 sum = num + key
                 if sum > target:
                     break
