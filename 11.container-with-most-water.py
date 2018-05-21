@@ -1,53 +1,41 @@
-class Pos(object):
-    def __init__(self, x, y):
-        self.x = x
-        self.y = y
-
-
 class Solution(object):
     def maxArea(self, height):
-        first = self.innerMaxArea(height)
+        first = self.inner_max_area(height)
         height.reverse()
-        second = self.innerMaxArea(height)
+        second = self.inner_max_area(height)
 
-        return max(first, second)
+        print first, second
+        return max(first[0], second[0])
 
-    def innerMaxArea(self, height):
+    def inner_max_area(self, height):
         """
         :type height: List[int]
         :rtype: int
         """
-        stack = [Pos(0, 0)]
-        maxArea = 0
+        stack = [(0, 0)]
+        max_area = (0, 0, 0)
 
         for i, h in enumerate(height):
-            greater = self.findMinGreater(stack, h, 0, len(stack))
+            greater = self.find_first_greater(stack, h, 0, len(stack))
             if greater is not None:
-                area = min(h, greater.y) * (i - greater.x)
-                if area > maxArea:
-                    maxArea = area
-            if h > stack[-1].y:
-                stack.append(Pos(i, h))
+                area = min(h, greater[1]) * (i - greater[0])
+                if area > max_area[0]:
+                    max_area = (area, greater[0], i)
+            if h > stack[-1][1]:
+                stack.append((i, h))
 
-        return maxArea
+        return max_area
 
-    def findMinGreater(self, list, value, start, end):
+    def find_first_greater(self, list, value, start, end):
         if end - start <= 3:
             for i in range(start, end):
-                if list[i].y >= value:
+                if list[i][1] >= value:
                     return list[i]
             return None
-        midIndex = (start + end) / 2
-        mid = list[midIndex]
+        mid_index = (start + end) / 2
+        mid = list[mid_index]
 
-        if mid.y == value:
-            return mid
-        elif mid.y < value:
-            return self.findMinGreater(list, value, midIndex, end)
+        if mid[1] <= value:
+            return self.find_first_greater(list, value, mid_index, end)
         else:
-            return self.findMinGreater(list, value, start, midIndex)
-
-
-if __name__ == '__main__':
-    print Solution().maxArea([4, 6, 2, 7, 3])
-    print Solution().maxArea([1, 2])
+            return self.find_first_greater(list, value, start, mid_index + 1)
