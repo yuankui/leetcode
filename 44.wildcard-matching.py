@@ -1,44 +1,22 @@
 class Solution(object):
-    count = 1
-    def pre_check(self, s, p):
-        words = p.split('*')
-        words = filter(lambda x: x != '', words)
-        words = '?'.join(words)
-        words = words.split('?')
-        words = filter(lambda x: x != '', words)
-        for word in words:
-            if s.find(word) < 0:
-                return False
-        return True
+    def isMatch(self, s, p):
+        seps = p.split('*')
+        seps = filter(lambda x: x != '', seps)
 
-    def isMatch(self, s, p, min_pattern_len=0):
-        self.count += 1
-        if not self.pre_check(s, p):
-            return False
-        if min_pattern_len == 0:
-            min_pattern_len = len(p.replace('*', ''))
+    def left_find(self, s, word):
+        c = word[0]
 
-        if min_pattern_len > len(s):
-            return False
-        while p != p.replace('**', '*'):
-            p = p.replace('**', '*')
-        if len(p) == 0 and len(s) == 0:
-            return True
-
-        if len(s) == 0:
-            return p[0] == '*' and self.isMatch(s, p[1:], min_pattern_len)
-
-        if len(p) == 0:
-            return False
-
-        c = p[0]
-        if c == '?' and len(s) > 0:
-            return self.isMatch(s[1:], p[1:], min_pattern_len - 1)
-        if c == '*':
-            return self.isMatch(s, p[1:], min_pattern_len) or \
-                   self.isMatch(s[1:], p, min_pattern_len)
+        if self.match(s[0], c):
+            pos = self.left_find(s[1:], word[1:])
+            if pos >= 0:
+                return pos + 1
         else:
-            return c == s[0] and self.isMatch(s[1:], p[1:], min_pattern_len - 1)
+            return self.left_find(s[1:], word)
+
+    def match(self, a, b):
+        if a == b:
+            return True
+        return b == '?' or a == '?'
 
 
 if __name__ == '__main__':
@@ -48,7 +26,3 @@ if __name__ == '__main__':
         "babbbbaabababaabbababaababaabbaabababbaaababbababaaaaaabbabaaaabababbabbababbbaaaababbbabbbbbbbbbbaabbb",
         "b**bb**a**bba*b**a*bbb**aba***babbb*aa****aabb*bbb***a"
     )
-
-    print s.count
-
-
