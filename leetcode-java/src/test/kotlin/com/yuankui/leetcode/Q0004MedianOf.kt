@@ -3,20 +3,58 @@ package com.yuankui.leetcode
 import org.junit.jupiter.api.Test
 
 /**
- * 思路：
- * 单边淘汰
  * 
- * 总数n+m个，先单边淘汰掉(n+m-2)/2个，然后剩余2个，如果相等，就返回任意一个，如果不相等，就返回他们的平均值
- * 
- * 如何进行单边淘汰：
- *  1. 尝试淘汰其中一个数组的一半，然后，取他最大值，以这个最大值为基准，淘汰掉所有比这个数小的另外一个数组的数，通过移动下标。
  */
 @Link("https://leetcode.com/problems/median-of-two-sorted-arrays/")
 class Q0004MedianOf {
 
     fun findMedianSortedArrays(nums1: IntArray, nums2: IntArray): Double {
-        return 1.0
+
+        val total = nums1.size + nums2.size
+
+        fun forward(min1: Int, min2: Int): Double {
+            var i1 = min1
+            var i2 = min2
+            var queue = Pair(0, 0)
+
+            0.until((nums1.size + nums2.size + 2) / 2).forEach {
+                if (i1 <= nums1.size - 1 && (i2 > nums2.size - 1 || nums1[i1] <= nums2[i2])) {
+                    val (_, max) = queue
+                    queue = Pair(max, nums1[i1])
+                    println("1 ->$i1, value = ${nums1[i1]}")
+                    i1++
+                } else {
+                    val (_, max) = queue
+                    queue = Pair(max, nums2[i2])
+                    println("2 ->$i2, value = ${nums2[i2]}")
+                    i2++
+                }
+
+                println("queue => $queue")
+            }
+
+            val (min, max) = queue
+            return if (total % 2 == 0) {
+                (min + max).toDouble() / 2
+            } else {
+                max.toDouble()
+            }
+        }
+
+
+        return forward(0, 0)
     }
+
+    class Res(
+            val l1: Int,
+            val r1: Int,
+            val nums1: IntArray,
+
+            val l2: Int,
+            val r2: Int,
+            val nums2: IntArray,
+            val remain: Int
+    )
 
     @Test
     fun test() {
