@@ -2,7 +2,15 @@ package com.yuankui.leetcode
 
 import org.junit.jupiter.api.Test
 
-
+/**
+ * 思路：
+ * 单边淘汰
+ * 
+ * 总数n+m个，先单边淘汰掉(n+m-2)/2个，然后剩余2个，如果相等，就返回任意一个，如果不相等，就返回他们的平均值
+ * 
+ * 如何进行单边淘汰：
+ *  1. 尝试淘汰其中一个数组的一半，然后，取他最大值，以这个最大值为基准，淘汰掉所有比这个数小的另外一个数组的数，通过移动下标。
+ */
 @Link("https://leetcode.com/problems/median-of-two-sorted-arrays/")
 class Q0004MedianOf {
 
