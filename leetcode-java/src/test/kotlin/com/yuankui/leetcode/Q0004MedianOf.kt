@@ -3,7 +3,9 @@ package com.yuankui.leetcode
 import org.junit.jupiter.api.Test
 
 /**
+ * 先粗，后细
  * 
+ * 先大踏步，后小踏步
  */
 @Link("https://leetcode.com/problems/median-of-two-sorted-arrays/")
 class Q0004MedianOf {
@@ -12,12 +14,12 @@ class Q0004MedianOf {
 
         val total = nums1.size + nums2.size
 
-        fun forward(min1: Int, min2: Int): Double {
+        fun forward(min1: Int, min2: Int, step: Int): Double {
             var i1 = min1
             var i2 = min2
             var queue = Pair(0, 0)
 
-            0.until((nums1.size + nums2.size + 2) / 2).forEach {
+            0.until(step).forEach {
                 if (i1 <= nums1.size - 1 && (i2 > nums2.size - 1 || nums1[i1] <= nums2[i2])) {
                     val (_, max) = queue
                     queue = Pair(max, nums1[i1])
@@ -40,21 +42,12 @@ class Q0004MedianOf {
                 max.toDouble()
             }
         }
-
-
-        return forward(0, 0)
+        
+        val step = (nums1.size + nums2.size + 2) / 2
+        return forward(0, 0, step)
+        
     }
-
-    class Res(
-            val l1: Int,
-            val r1: Int,
-            val nums1: IntArray,
-
-            val l2: Int,
-            val r2: Int,
-            val nums2: IntArray,
-            val remain: Int
-    )
+    
 
     @Test
     fun test() {
