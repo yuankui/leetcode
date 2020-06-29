@@ -2,6 +2,7 @@ package com.yuankui.leetcode
 
 import org.junit.jupiter.api.Test
 
+@Link("https://leetcode.com/problems/longest-substring-without-repeating-characters/")
 class Q003LongestSubstring {
     fun lengthOfLongestSubstring(s: String): Int {
         var max = 0
