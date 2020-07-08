@@ -4,6 +4,9 @@ import org.junit.jupiter.api.Test
 
 class Q0006ZigZag {
     fun convert(s: String, numRows: Int): String {
+        if (numRows == 1) {
+            return s
+        }
         val cube = initCharCube(numRows, s.length)
 
         s.forEachIndexed { i: Int, c: Char ->
@@ -19,14 +22,6 @@ class Q0006ZigZag {
             } else {
                 cube[(numRows-1)- (remain - numRows + 1)][base * (numRows - 1) + numRows - (w - remain) - 1] = c
             }
-
-            for (arrayOfChars in cube) {
-                println(arrayOfChars.map {
-                    if (it == null)
-                        "_" else it
-                }.joinToString(""))
-            }
-            println()
         }
 
         val sb = StringBuffer()
