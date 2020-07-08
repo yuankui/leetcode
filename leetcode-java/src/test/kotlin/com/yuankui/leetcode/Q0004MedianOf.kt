@@ -4,22 +4,21 @@ import org.junit.jupiter.api.Test
 
 /**
  * 先粗，后细
- * 
+ *
  * 先大踏步，后小踏步
  */
 @Link("https://leetcode.com/problems/median-of-two-sorted-arrays/")
 class Q0004MedianOf {
 
     fun findMedianSortedArrays(nums1: IntArray, nums2: IntArray): Double {
-
         val total = nums1.size + nums2.size
 
-        fun forward(min1: Int, min2: Int, step: Int): Double {
+        fun forward(min1: Int, min2: Int): Double {
             var i1 = min1
             var i2 = min2
             var queue = Pair(0, 0)
 
-            0.until(step).forEach {
+            0.until((nums1.size + nums2.size + 2) / 2).forEach {
                 if (i1 <= nums1.size - 1 && (i2 > nums2.size - 1 || nums1[i1] <= nums2[i2])) {
                     val (_, max) = queue
                     queue = Pair(max, nums1[i1])
@@ -42,12 +41,11 @@ class Q0004MedianOf {
                 max.toDouble()
             }
         }
-        
-        val step = (nums1.size + nums2.size + 2) / 2
-        return forward(0, 0, step)
-        
+
+
+        return forward(0, 0)
     }
-    
+
 
     @Test
     fun test() {
