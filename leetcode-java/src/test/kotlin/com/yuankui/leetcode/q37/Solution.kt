@@ -16,38 +16,41 @@ class Solution {
                 .map { mutableSetOf<Char>() }
                 .toTypedArray()
 
-        val rowGetter = { i: Int, j: Int ->
-            board[i][j]
+        fun posToRow(x: Int, y: Int): Int {
+            return y
+        }
+        fun posToColumn(x: Int, y: Int): Int {
+            return x
+        }
+        fun posToCell(x: Int, y: Int): Int {
+            return y / 3 * 3 + x / 3
         }
 
-        val columnGetter = { i: Int, j: Int ->
-            board[j][i]
-        }
-
-        val cellGetter = {i: Int, j: Int ->
-            val outX = i % 3 * 3
-            val outY = i / 3 * 3
-            val inX = j % 3
-            val inY = j / 3
-            board[outY + inY][outX + inX]
-        }
 
         // 初始化容器
         for (i in board.indices) {
             for (j in board.indices) {
-                rowState.get(i) += rowGetter(i, j)
-                columnState.get(i) += columnGetter(i, j)
-                cellState.get(i) += cellGetter(i, j)
+                val c = board[i][j]
+
+                val rowIndex = posToRow(j, i)
+                rowState.get(rowIndex) += c
+
+                val columnIndex = posToColumn(j, i)
+                columnState.get(columnIndex) += c
+
+                val cellIndex = posToCell(j, i)
+                cellState.get(cellIndex) += c
             }
         }
 
 
         // 递归深度优先
         fun search(i: Int, j: Int): Boolean {
-            if (i == board.size - 1 && j == board.size - 1) {
+
+            if (i == board.size) {
                 return true
             }
-            val c = columnGetter(i, j)
+            val c = board[i][j]
             if (c != '.') {
                 // 换行
                 if (j == board.size - 1) {
@@ -57,20 +60,23 @@ class Solution {
                 }
             }
 
+            val cell = cellState[posToCell(j, i)]
+            val column = columnState[posToColumn(j, i)]
+            val row = rowState[posToRow(j, i)]
+
             // 填入数字
             for (a in '1'..'9') {
                 // 判断是否满足数独
-                if (cellState[i].contains(a)) continue
-                if (columnState[i].contains(a)) continue
-                if (rowState[i].contains(a)) continue
+                if (cell.contains(a)) continue
+                if (column.contains(a)) continue
+                if (row.contains(a)) continue
 
                 // 满足
-                cellState[i].add(a)
-                columnState[i].add(a)
-                rowState[i].add(a)
+                cell.add(a)
+                column.add(a)
+                row.add(a)
                 board[i][j] = a
 
-                printBoard(board)
                 // 继续搜索
                 if (j == board.size - 1) {
                     if (search(i + 1, 0)) {
@@ -83,15 +89,16 @@ class Solution {
                 }
 
                 // 还原
-                cellState[i].remove(a)
-                columnState[i].remove(a)
-                rowState[i].remove(a)
+                cell.remove(a)
+                column.remove(a)
+                row.remove(a)
                 board[i][j] = '.'
             }
             return false
         }
 
-        search(0, 0)
+        val res = search(0, 0)
+        println("res = ${res}")
     }
 
     @Test
@@ -108,7 +115,26 @@ class Solution {
                 "....8..79".toCharArray(),
         )
 
-        this.solveSudoku(board)
+        val res = this.solveSudoku(board)
+
+        printBoard(board)
+    }
+
+    @Test
+    fun test2() {
+        val board = arrayOf(
+                "..9748...".toCharArray(),
+                "7........".toCharArray(),
+                ".2.1.9...".toCharArray(),
+                "..7...24.".toCharArray(),
+                ".64.1.59.".toCharArray(),
+                ".98...3..".toCharArray(),
+                "...8.3.2.".toCharArray(),
+                "........6".toCharArray(),
+                "...2759..".toCharArray(),
+        )
+
+        val res = this.solveSudoku(board)
 
         printBoard(board)
     }
