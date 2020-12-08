@@ -1,5 +1,8 @@
 package com.yuankui.leetcode.c100.q65
 
+/**
+ * DFA, NFA学习: https://blog.csdn.net/axwolfer/article/details/104128274
+ */
 class Solution {
     fun isNumber(s: String): Boolean {
         val digits = ('0'..'9').toSet()
