@@ -1,35 +1,125 @@
 package com.yuankui.leetcode.c100.q65
 
+import org.junit.jupiter.api.Test
+
 /**
  * DFA, NFA学习: https://blog.csdn.net/axwolfer/article/details/104128274
  */
 class Solution {
     fun isNumber(s: String): Boolean {
-        val digits = ('0'..'9').toSet()
-        val exp = setOf('e', 'E')
-        val ops = setOf('-', '+')
-        
-        // 处理包含非法字符
-        if (s.any { !(it in digits || it in exp || it in ops)}) {
+        val digits = "0123456789"
+        val space = " "
+        val ops = "-+"
+        val point = "."
+        val exp = "Ee"
+
+        val trans = mapOf(
+                "S1" to mapOf(
+                        digits to "S4",
+                        space to "S2",
+                        point to "S51"
+                ),
+                "S2" to mapOf(
+                        digits to "S4",
+                        space to "S2",
+                        ops to "S3",
+                        point to "S51"
+                ),
+                "S3" to mapOf(
+                        digits to "S4"
+                ),
+                "S4" to mapOf(
+                        point to "S5",
+                        space to "S9",
+                        exp to "S6",
+                        digits to "S4"
+                ),
+                "S5" to mapOf(
+                        digits to "S5",
+                        exp to "S6",
+                        space to "S9"
+                ),
+                "S51" to mapOf(
+                        digits to "S5"
+                ),
+                "S6" to mapOf(
+                        digits to "S8",
+                        ops to "S7"
+                ),
+                "S7" to mapOf(
+                        digits to "S8"
+                ),
+                "S8" to mapOf(
+                        digits to "S8",
+                        space to "S9"
+                ),
+                "S9" to mapOf(
+                        space to "S9"
+                )
+        )
+
+        val endState = setOf("S4", "S5", "S8", "S9")
+
+        var currrent = "S1"
+        outer@ for (c in s) {
+            for (entry in trans[currrent]!!.entries) {
+                val charSet = entry.key
+                val nextState = entry.value
+
+                // 能够根据当前输入，找到下一个状态
+                if (c in charSet) {
+                    currrent = nextState
+                    continue@outer
+                }
+            }
+            // 不能找到下一个状态
             return false
         }
-        
-        // 处理中间包含空格
-        if (s.trim().contains(' ')) {
-            return false
+
+        return currrent in endState
+    }
+
+    @Test
+    fun test() {
+        val inputs = mapOf(
+                "0" to true,
+                " 0.1 " to true,
+                "abc" to false,
+                "1 a" to false,
+                "2e10" to true,
+                " -90e3" to true,
+                " 1e" to false,
+                "e3" to false,
+                " 6e-1" to true,
+                " 99e2.5" to false,
+                "53.5e93" to true,
+                " --6 " to false,
+                "-+3" to false,
+                "95a54e53" to false,
+                ".1" to true,
+        )
+        for (input in inputs) {
+            val output = this.isNumber(input.key)
+            assert(output == input.value)
+            println("${input} => ${output}")
         }
-        
-        // 连续包含正负号的
-        for (i in 0 until s.length - 1) {
-            if (s[i] in ops && s[i+1] in ops) return false
+    }
+
+    @Test
+    fun test2() {
+        val inputs = listOf(
+                ".1",
+        )
+        for (input in inputs) {
+            val output = this.isNumber(input)
+            println("${input} => ${output}")
         }
-        
-        // todo
     }
 
     /**
      * 正则表达式: ^\s*(-|\+)?\d+(\.\d+)?((E|e)(-?)\d+)?
      *
-     * DFA链接: https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%0A%0A%20%20start%20-%3E%20S%0A%20%20S%20-%3E%20S%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%0A%20%20start%20-%3E%20p1%20%5Blabel%20%3D%20%22direct%22%5D%0A%20%20S%20-%3E%20p1%0A%20%20%0A%20%20%0A%20%20p1%20-%3E%20p2%0A%20%20p2%20-%3E%20p3%0A%20%20p1%20-%3E%20p4%0A%20%20p4%20-%3E%20p3%0A%20%20p1%20-%3E%20p3%20%5Blabel%20%3D%20%22direct%22%5D%0A%20%20%0A%20%20%0A%20%20p3%20-%3E%20d1%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20d1%20-%3E%20d1%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%0A%20%20d1%20-%3E%20e1%20%5Blabel%20%3D%20%22%5C%22.%5C%22%22%5D%0A%20%20e1%20-%3E%20e2%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20e2%20-%3E%20e2%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%0A%20%20%0A%20%20d1%20-%3E%20f%20%5Blabel%20%3D%20%22direct%22%5D%0A%20%20e2%20-%3E%20f%0A%20%20%0A%20%20%0A%20%20f%20-%3E%20end%20%0A%20%20%0A%20%20end%20%5Bshape%20%3D%20doublecircle%5D%0A%20%20%0A%20%20end%20-%3E%20n1%20%5Blabel%20%3D%20%22E%22%5D%0A%20%20end%20-%3E%20n2%20%5Blabel%20%3D%20%22e%22%5D%0A%20%20%0A%20%20n1%20-%3E%20n3%0A%20%20n2%20-%3E%20n3%0A%20%20%0A%20%20n3%20-%3E%20n4%20%5Blabel%20%3D%20%22-%22%5D%0A%20%20n4%20-%3E%20n5%0A%20%20n3%20-%3E%20n5%20%5Blabel%20%3D%20%22direct%22%5D%0A%20%20%0A%20%20n5%20-%3E%20n6%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20n6%20-%3E%20n6%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%0A%20%20n6%20%5Bshape%20%3D%20doublecircle%5D%0A%20%20%0A%7D
+     * DFA链接:
+     *  - https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%20%20%20%20s1%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20s1%20-%3E%20s2%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s2%20-%3E%20s2%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s2%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s2%20-%3E%20s3%20%5Blabel%20%3D%20%22-%2F%2B%22%5D%0A%20%20%20%20s3%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%20%5Bshape%20%3D%20doublecircle%5D%0A%20%20%20%20%0A%20%20%20%20s4%20-%3E%20s5%20%5Blabel%20%3D%20%22%5C%22.%5C%22%22%5D%0A%20%20%20%20s5%20-%3E%20s5%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%0A%20%20%20%20%0A%20%20%20%20s5%20-%3E%20s6%20%5Blabel%20%3D%20%22E%2Fe%22%5D%0A%20%20%20%20%0A%20%20%20%20s6%20-%3E%20s7%20%5Blabel%20%3D%20%22-%2F%2B%22%5D%0A%20%20%20%20%0A%20%20%20%20s6%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%0A%20%20%20%20s7%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20s8%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s5%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s8%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s9%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20%0A%20%20%20%20s5%20%5Bshape%3Ddoublecircle%5D%0A%0A%20%20%20%20s8%20%5Bshape%3Ddoublecircle%5D%0A%20%20%20%20s9%20%5Bshape%3Ddoublecircle%5D%0A%7D
      */
 }
