@@ -14,53 +14,65 @@ class Solution {
         val exp = "Ee"
 
         val trans = mapOf(
-                "S1" to mapOf(
-                        digits to "S4",
-                        space to "S2",
-                        point to "S51"
+                "s1" to mapOf(
+                        space to "s2",
+                        ops to "s3",
+                        point to "s4",
+                        digits to "s5"
                 ),
-                "S2" to mapOf(
-                        digits to "S4",
-                        space to "S2",
-                        ops to "S3",
-                        point to "S51"
+                "s2" to mapOf(
+                        ops to "s3",
+                        point to "s4",
+                        digits to "s5",
+                        space to "s2"
                 ),
-                "S3" to mapOf(
-                        digits to "S4"
+                "s3" to mapOf(
+                        point to "s4",
+                        digits to "s5"
                 ),
-                "S4" to mapOf(
-                        point to "S5",
-                        space to "S9",
-                        exp to "S6",
-                        digits to "S4"
+                "s4" to mapOf(
+                        digits to "s41"
                 ),
-                "S5" to mapOf(
-                        digits to "S5",
-                        exp to "S6",
-                        space to "S9"
+                "s41" to mapOf(
+                        digits to "s41",
+                        exp to "s8",
+                        space to "s11"
                 ),
-                "S51" to mapOf(
-                        digits to "S5"
+                "s5" to mapOf(
+                        point to "s6",
+                        exp to "s8",
+                        space to "s11",
+                        digits to "s5"
                 ),
-                "S6" to mapOf(
-                        digits to "S8",
-                        ops to "S7"
+                "s6" to mapOf(
+                        digits to "s7",
+                        exp to "s8",
+                        space to "s11"
                 ),
-                "S7" to mapOf(
-                        digits to "S8"
+                "s7" to mapOf(
+                        digits to "s7",
+                        exp to "s8",
+                        space to "s11"
                 ),
-                "S8" to mapOf(
-                        digits to "S8",
-                        space to "S9"
+                "s8" to mapOf(
+                        ops to "s9",
+                        digits to "s10"
                 ),
-                "S9" to mapOf(
-                        space to "S9"
+                "s9" to mapOf(
+                        digits to "s10"
+                ),
+                "s10" to mapOf(
+                        digits to "s10",
+                        space to "s11"
+                ),
+                "s11" to mapOf(
+                        space to "s11"
                 )
         )
 
-        val endState = setOf("S4", "S5", "S8", "S9")
+        val endState = setOf("s41", "s5", "s6", "s7", "s10", "s11")
 
-        var currrent = "S1"
+        var currrent = "s1"
         outer@ for (c in s) {
             for (entry in trans[currrent]!!.entries) {
                 val charSet = entry.key
@@ -97,29 +109,26 @@ class Solution {
                 "-+3" to false,
                 "95a54e53" to false,
                 ".1" to true,
+                "  2.8" to true,
         )
         for (input in inputs) {
             val output = this.isNumber(input.key)
+            println("input.key = ${input.key}")
             assert(output == input.value)
-            println("${input} => ${output}")
         }
     }
 
     @Test
     fun test2() {
-        val inputs = listOf(
-                ".1",
-        )
-        for (input in inputs) {
-            val output = this.isNumber(input)
-            println("${input} => ${output}")
-        }
+        val input = "  2.8"
+        val output = this.isNumber(input)
+        println("${input} => ${output}")
     }
 
     /**
-     * 正则表达式: ^\s*(-|\+)?\d+(\.\d+)?((E|e)(-?)\d+)?
+     * 正则表达式: \s*(-|\+)?((\d+(\.\d*)?)|\.\d+)((E|e)(-|\+)?\d+)?\s*
      *
      * DFA链接:
-     *  - https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%20%20%20%20s1%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20s1%20-%3E%20s2%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s2%20-%3E%20s2%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s2%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s2%20-%3E%20s3%20%5Blabel%20%3D%20%22-%2F%2B%22%5D%0A%20%20%20%20s3%20-%3E%20s4%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%20%5Bshape%20%3D%20doublecircle%5D%0A%20%20%20%20%0A%20%20%20%20s4%20-%3E%20s5%20%5Blabel%20%3D%20%22%5C%22.%5C%22%22%5D%0A%20%20%20%20s5%20-%3E%20s5%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%0A%20%20%20%20%0A%20%20%20%20s5%20-%3E%20s6%20%5Blabel%20%3D%20%22E%2Fe%22%5D%0A%20%20%20%20%0A%20%20%20%20s6%20-%3E%20s7%20%5Blabel%20%3D%20%22-%2F%2B%22%5D%0A%20%20%20%20%0A%20%20%20%20s6%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%0A%20%20%20%20s7%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20s8%20-%3E%20s8%20%5Blabel%20%3D%20%22digit%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s5%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s8%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20s9%20-%3E%20s9%20%5Blabel%20%3D%20%22space%22%5D%0A%20%20%20%20%0A%20%20%20%20s5%20%5Bshape%3Ddoublecircle%5D%0A%0A%20%20%20%20s8%20%5Bshape%3Ddoublecircle%5D%0A%20%20%20%20s9%20%5Bshape%3Ddoublecircle%5D%0A%7D
+     *  - https://dreampuf.github.io/GraphvizOnline/#digraph%20G%20%7B%0A%20%20%20%20%0A%20%20%20%20s1%2C%20s2%20-%3E%20s2%20%5Blabel%20%3D%20%22%5C%5Cs%22%5D%0A%20%20%20%20s1%2C%20s2%20-%3E%20s3%20%5Blabel%20%3D%20%22-%7C%2B%22%5D%0A%20%20%20%20s1%2C%20s2%2C%20s3%20-%3E%20s4%20%5Blabel%20%3D%20%22%5C%5C.%22%5D%0A%20%20%20%20s1%2C%20s2%2C%20s3%20-%3E%20s5%20%5Blabel%20%3D%20%22%5C%5Cd%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%2C%20s41%20-%3E%20s41%20%5Blabel%20%3D%20%22%5Cd%22%5D%0A%20%20%20%20%0A%20%20%20%20%0A%20%20%20%20s5%20-%3E%20s6%20%5Blabel%20%3D%20%22%5C%5C.%22%5D%0A%20%20%20%20s6%2C%20s7%20-%3E%20s7%20%5Blabel%20%3D%20%22%5C%5Cd%22%5D%0A%20%20%20%20%0A%20%20%20%20s41%2C%20s5%2C%20s6%2C%20s7%20-%3E%20s8%20%5Blabel%20%3D%20%22E%7Ce%22%5D%0A%20%20%20%20s8%20-%3E%20s9%20%5Blabel%20%3D%20%22-%7C%2B%22%5D%0A%20%20%20%20%0A%20%20%20%20s8%2C%20s9%2C%20s10%20-%3E%20s10%20%5Blabel%20%3D%20%22%5C%5Cd%22%5D%0A%20%20%20%20%0A%20%20%20%20s10%2C%20s11%20-%3E%20s11%20%5Blabel%20%3D%20%22%5C%5Cs%22%5D%0A%20%20%20%20%0A%20%20%20%20s4%2C%20s5%2C%20s6%2C%20s7%2C%20s10%2C%20s11%20%5Bshape%3Ddoublecircle%5D%0A%20%20%0A%7D
      */
 }
