@@ -23,7 +23,7 @@ class Solution {
             val count = countMap[c] ?: 0
             countMap[c] = count + 1
 
-            if (count >= charSet[c]?: 0) {
+            if (count + 1 >= charSet[c]?: 0) {
                 expectCharSet.remove(c)
             }
             if (expectCharSet.size == 0) {
@@ -86,13 +86,13 @@ class Solution {
         }
 
 
-        return s.substring(l, r + 1)
+        return s.substring(minIndex.first, minIndex.second + 1)
     }
 
     @Test
     fun test() {
 
-        val res = this.minWindow("A", "AA")
+        val res = this.minWindow("AB", "A")
 //        val res = this.minWindow("ADOBECODEBANC", "ABC")
         // "BANC"
 
