@@ -35,11 +35,15 @@ class Solution {
 
     @Test
     fun test() {
+//        val input = arrayOf(
+//                "10100".toCharArray(),
+//                "10111".toCharArray(),
+//                "11111".toCharArray(),
+//                "10010".toCharArray(),
+//        )
+        
         val input = arrayOf(
-                "10100".toCharArray(),
-                "10111".toCharArray(),
-                "11111".toCharArray(),
-                "10010".toCharArray(),
+                "0".toCharArray(),
         )
 
         val res = this.maximalRectangle(input)
