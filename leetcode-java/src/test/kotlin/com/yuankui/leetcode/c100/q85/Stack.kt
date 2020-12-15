@@ -15,6 +15,7 @@ class Stack {
             for (j in 0..(matrix.first().size)) {
                 if (j < matrix.first().size) {
                     if (matrix[i][j] == '1') h[j] += 1
+                    else h[j] = 0
                 }
 
 
@@ -24,15 +25,19 @@ class Stack {
                     continue
                 }
 
-                var v = h.getValue(j)
-                while (v < h.getValue(deque.last())) {
-                    val last = deque.removeLast()
-                    if (h[last] * (j - last) > max) {
-                        max = h.getValue(last) * (j - last)
+                while (h.getValue(j) < h.getValue(deque.last())) {
+                    var left = deque.removeLast()
+                    val height = h.getValue(left)
+                    while (h.getValue(left) == h.getValue(deque.last())) {
+                        left = deque.removeLast()
                     }
-                    v = h.getValue(deque.last())
+                    left = deque.last()
+                    
+                    if (height * (j - left - 1) > max) {
+                        max = height * (j - left -1)
+                    }
                 }
-
+                deque.addLast(j)
             }
         }
 
@@ -54,8 +59,15 @@ class Stack {
 //                "11111".toCharArray(),
 //                "10010".toCharArray(),
 //        )
+        
+//        val input = arrayOf(
+//                "11".toCharArray(),
+//        )
+        
+        
         val input = arrayOf(
-                "1".toCharArray(),
+                "001".toCharArray(),
+                "111".toCharArray(),
         )
         val res = this.maximalRectangle(input)
         println("res = ${res}")
