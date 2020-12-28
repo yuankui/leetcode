@@ -4,73 +4,50 @@ import org.junit.jupiter.api.Test
 
 class Solution {
     fun isScramble(s1: String, s2: String): Boolean {
-        if (s1 == s2) {
-            return true
-        }
+        if (s1.length != s2.length) return false;
+        val len = s1.length
 
-        if (s1.length <= 1) {
-            return false
-        }
-
-        val s11 = mutableMapOf<Char, Int>()
-        val s12 = mutableMapOf<Char, Int>()
-        val s21 = mutableMapOf<Char, Int>()
-        val s22 = mutableMapOf<Char, Int>()
-        for (c in s1) {
-            s12.addCount(c)
-        }
-        for (c in s2) {
-            s21.addCount(c)
-        }
-
-        for (i in 1..(s1.length - 1)) {
-            val c1 = s1[i - 1]
-            val c2 = s2[s2.length - i]
-
-            s11.addCount(c1)
-            s12.delCount(c1)
-            s22.addCount(c2)
-            s21.delCount(c2)
-
-            if (s11.equals(s22) && s12.equals(s21)) {
-                return isScramble(s1.substring(0, i), s2.substring(s2.length - i))
-                        && isScramble(s1.substring(i), s2.substring(0, s2.length - i))
+        val f: Array<Array<Array<Boolean>>> = Array(len + 1) {
+            Array(len + 1) {
+                Array(len + 1) { k ->
+                    k == 0
+                }
             }
         }
 
-        return false
-    }
+        for (l in 1..len) {
+            for (i in 0..(len - l)) {
+                for (j in 0..(len - l)) {
+                    k@ for (k in 0 until l) {
+                        // 相等
+                        if (s1.substring(i, i + l) == s2.substring(j, j + l)) {
+                            f[i][j][l] = true
+                            break
+                        }
 
-    fun MutableMap<Char, Int>.addCount(c: Char) {
-        if (c in this) {
-            this[c] = this[c]!! + 1
-        } else {
-            this[c] = 1
-        }
-    }
+                        if (f[i][j][k] && f[i + k][j + k][l - k]) {
+                            f[i][j][l] = true
+                            break
+                        }
 
-    fun MutableMap<Char, Int>.delCount(c: Char) {
-        if (!this.containsKey(c)) return
-        if (this[c] == 1) {
-            this.remove(c)
-        } else {
-            this[c] = this[c]!! - 1
+                        if (f[i][j + (l - k)][k] && f[i + k][j][l - k]) {
+                            f[i][j][l] = true
+                            break@k
+                        }
+                    }
+                    if (f[i][j][l]) {
+                        println("i => $i, j => $j, l => $l")
+                    }
+                }
+            }
         }
-    }
-
-    fun MutableMap<Char, Int>.equals(other: MutableMap<Char, Int>): Boolean {
-        if (this.size != other.size) {
-            return false
-        }
-
-        return this.all { kv ->
-            other[kv.key] == kv.value
-        }
+        return f[0][0][len]
     }
 
     @Test
     fun test() {
-        val res = this.isScramble("great", "rgeat")
+        val res = this.isScramble("a", "b")
+//        val res = this.isScramble("great", "rgeat")
         println("res = ${res}")
     }
 }
